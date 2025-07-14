@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "watering_time": 15,
+        "backoff_time": 30,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 0,
+            "max": 100
+        },
+        "env_conditions": {
+            "temperature_range": {
+                "min": 0,
+                "max": 100
+            },
+            "humidity_range": {
+                "min": 0,
+                "max": 1000
+            }
+        }
+    },
+    {
+        "id": 2,
+        "watering_time": 15,
+        "backoff_time": 45,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 0,
+            "max": 100
+        },
+        "env_conditions": {
+            "temperature_range": {
+                "min": 0,
+                "max": 1000
+            },
+            "humidity_range": {
+                "min": 0,
+                "max": 1000
+            }
+        }
+    },
+    {
+        "id": 3,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 0,
+            "max": 100
+        }
+    }
+]
