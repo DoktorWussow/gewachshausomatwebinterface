@@ -5,6 +5,7 @@ use rand::{Rng, RngCore};
 use rocket::{
     State,
     fs::{FileServer, relative},
+    http::Status,
     response::Redirect,
     serde::json::Json,
 };
@@ -47,9 +48,33 @@ struct ReturnSensor {
     temperature: Option<i32>,
     humidity: Option<i32>,
 }
+#[derive(Debug, Serialize, Deserialize)]
+struct SetSensor {
+    id: u32,
+    watering_time: u16,
+    backoff_time: u16,
+    threshold: u16,
+}
 #[get("/")]
 fn redirect_to_static() -> Redirect {
     Redirect::permanent(uri!("/static"))
+}
+#[post("/sensor", data = "<sensor>")]
+fn set_sensor(mock_sensors: &State<Vec<PlantObject>>, sensor: Json<SetSensor>) -> Status {
+    if let Some(to_edit) = mock_sensors.iter().find(|s| s.id == sensor.id) {
+        to_edit
+            .watering_time
+            .store(sensor.watering_time, std::sync::atomic::Ordering::Relaxed);
+        to_edit
+            .backoff_time
+            .store(sensor.backoff_time, std::sync::atomic::Ordering::Relaxed);
+        to_edit
+            .threshold
+            .store(sensor.threshold, std::sync::atomic::Ordering::Relaxed);
+        Status::Ok
+    } else {
+        Status::NotFound
+    }
 }
 fn get_random_from_range<T: RngCore>(rng: &mut T, range: Range) -> i32 {
     rng.random_range(range.min..=range.max)
@@ -58,7 +83,7 @@ fn get_random_from_range<T: RngCore>(rng: &mut T, range: Range) -> i32 {
 fn get_sensor(mock_sensors: &State<Vec<PlantObject>>, id: u32) -> Json<Option<ReturnSensor>> {
     let mut rng = rand::rng();
     Json(mock_sensors.iter().find_map(|sensor| {
-        if (id == sensor.id) {
+        if id == sensor.id {
             let moisture = get_random_from_range(&mut rng, sensor.moisture_range);
             let (temperature, humidity) = if let Some(env_cond) = sensor.env_conditions {
                 (
@@ -126,7 +151,7 @@ fn rocket() -> _ {
         .manage(objects)
         .mount(
             "/",
-            routes![redirect_to_static, get_sensor_list, get_sensor],
+            routes![redirect_to_static, get_sensor_list, get_sensor, set_sensor],
         )
         .mount("/static", FileServer::from(relative!("static")))
 }
