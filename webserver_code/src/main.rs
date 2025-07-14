@@ -153,5 +153,5 @@ fn rocket() -> _ {
             "/",
             routes![redirect_to_static, get_sensor_list, get_sensor, set_sensor],
         )
-        .mount("/static", FileServer::from(relative!("static")))
+        .mount("/static", FileServer::from("static/"))
 }
