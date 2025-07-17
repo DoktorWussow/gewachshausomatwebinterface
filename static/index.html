@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pflanzenbewässerung Dashboard</title>
-  <link rel="icon" href="pflanzen-giessen.png">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,6 +38,18 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1.5rem;
       margin-top: 2rem;
+     }
+     .Feuchte {
+      
+     }
+     .Threshold {
+      
+     }
+     .AirTemp {
+      
+     }
+     .AirHumidity {
+      
      }
 /*CHATGPT*/
 .input_row {
@@ -108,9 +119,18 @@ function Loop10() {
   //$: aus der Liste was ziehen (überarbeitet mit CHATGPT)
   plant.innerHTML = `
   <h2 class="Pot_Nr">${details_pot["id"]}</h2>
-  <div class="Feuchte">Feuchtigkeit: ${details_pot["moisture"]}</div>
-  <div class="Threshold">Schwellwert: ${details_pot["threshold"]}</div>
+  <div class="Feuchte">Feuchtigkeit: <b> ${details_pot["moisture"]} </b> </div>
+  <div class="Threshold">Schwellwert: <b> ${details_pot["threshold"]} </b> </div>`
 
+  if (details_pot["temperature"] != null) {
+  plant.innerHTML+=`<div class="AirTemp">Temperatur: <b> ${details_pot["temperature"]} </b> </div>`
+  }
+
+  if (details_pot["humidity"] != null) {
+    plant.innerHTML+=`<div class="AirHumidity">Luftfeuchtigkeit: <b> ${details_pot["humidity"]} </b> </div>`
+  }
+
+  plant.innerHTML+=`
   <div class="input_row">
     <label>Neuer Schwellenwert:</label>
     <input type="number" min="1200" max="2000" step="10" value="${details_pot["threshold"]}" id="${details_pot["id"]}_newinputthreshold">
@@ -139,7 +159,6 @@ function send_new_input(potId) {
 
   const data = {
     id: parseInt(potId),
-    moisture: 1345,
     threshold: parseInt(threshold, 10),
     backoff_time: parseInt(backoffTime, 10),
     watering_time: parseInt(wateringTime, 10)
@@ -147,6 +166,8 @@ function send_new_input(potId) {
 
   console.log("Gesammelte Eingaben als JSON:");
   console.log(data);
+
+  
 }
  
 

@@ -5,17 +5,17 @@
         "backoff_time": 30,
         "threshold": 1800,
         "moisture_range": {
-            "min": 0,
-            "max": 100
+            "min": 1150,
+            "max": 1800
         },
         "env_conditions": {
             "temperature_range": {
-                "min": 0,
-                "max": 100
+                "min": 15,
+                "max": 40
             },
             "humidity_range": {
-                "min": 0,
-                "max": 1000
+                "min": 50,
+                "max": 100
             }
         }
     },
@@ -25,17 +25,17 @@
         "backoff_time": 45,
         "threshold": 1800,
         "moisture_range": {
-            "min": 0,
-            "max": 100
+            "min": 1150,
+            "max": 1800
         },
         "env_conditions": {
             "temperature_range": {
-                "min": 0,
-                "max": 1000
+                "min": 15,
+                "max": 40
             },
             "humidity_range": {
-                "min": 0,
-                "max": 1000
+                "min": 50,
+                "max": 100
             }
         }
     },
@@ -47,6 +47,56 @@
         "moisture_range": {
             "min": 0,
             "max": 100
+        }
+    },
+    {
+        "id": 4,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 1150,
+            "max": 1800
+        }
+    },
+    {
+        "id": 5,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 1150,
+            "max": 1800
+        }
+    },
+    {
+        "id": 6,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 1150,
+            "max": 1800
+        }
+    },
+    {
+        "id": 7,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 1150,
+            "max": 1800
+        }
+    },
+    {
+        "id": 8,
+        "watering_time": 20,
+        "backoff_time": 60,
+        "threshold": 1800,
+        "moisture_range": {
+            "min": 1150,
+            "max": 1800
         }
     }
 ]
