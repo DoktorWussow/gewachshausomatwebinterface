@@ -45,8 +45,8 @@
         "backoff_time": 60,
         "threshold": 1800,
         "moisture_range": {
-            "min": 0,
-            "max": 100
+            "min": 1150,
+            "max": 1800
         }
     },
     {
