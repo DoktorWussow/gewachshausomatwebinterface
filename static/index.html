@@ -159,22 +159,25 @@ function send_new_input(potId) {
   const wateringTime = document.getElementById(`${potId}_newinputwateringtime`).value;
 
   const data = {
-    id: parseInt(potId),
-    threshold: parseInt(threshold, 10),
+    id: parseInt(potId), 
+    watering_time: parseInt(wateringTime, 10),
     backoff_time: parseInt(backoffTime, 10),
-    watering_time: parseInt(wateringTime, 10)
+    threshold: parseInt(threshold, 10)
+    
+   
   };
 
   console.log("Gesammelte Eingaben als JSON:");
   console.log(data);
-  
- // fetch('/sensors', {
- //   method: 'Post',
- //   headers: {
- //     'Content-Type': 'application/json'
- //   },
- //   body: JSON.stringify(data)
- // })
+ 
+ let upload = "/sensors" 
+ fetch(upload), {
+   method: 'Post',
+   headers: {
+     'Content-Type': 'application/json'
+   },
+   body: JSON.stringify(data)
+ }
 }
  
 
