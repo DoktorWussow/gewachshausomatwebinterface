@@ -170,14 +170,14 @@ function send_new_input(potId) {
   console.log("Gesammelte Eingaben als JSON:");
   console.log(data);
  
- let upload = "/sensors" 
- fetch(upload), {
+ let upload = "/sensor" 
+ fetch(upload, {
    method: 'Post',
    headers: {
      'Content-Type': 'application/json'
    },
    body: JSON.stringify(data)
- }
+ })
 }
  
 
