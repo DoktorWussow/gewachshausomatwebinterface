@@ -163,8 +163,6 @@ function send_new_input(potId) {
     watering_time: parseInt(wateringTime, 10),
     backoff_time: parseInt(backoffTime, 10),
     threshold: parseInt(threshold, 10)
-    
-   
   };
 
   console.log("Gesammelte Eingaben als JSON:");
@@ -179,12 +177,6 @@ function send_new_input(potId) {
    body: JSON.stringify(data)
  })
 }
- 
-
- 
-
-  
-
 </script>
 
 </body>
