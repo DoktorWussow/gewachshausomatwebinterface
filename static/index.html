@@ -6,6 +6,28 @@
   <title>Pflanzenbewässerung Dashboard</title>
   <style>
     /*Maximale anzustrebende Größe: 1MB */
+    /*Navbar*/
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    li {
+      float: left;
+    }
+    li a {
+     display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;  
+    }
+    li a:hover {
+      background-color: #111;
+    }
+    /*Ende Navbar*/
     body {
       font-family: Arial, sans-serif;
       color: green;
@@ -76,6 +98,9 @@
     <h1>
         Gewächshausomat
     </h1>
+    <ul>
+      <li><a class="active" onclick="location.reload()" value="ReLoad">Refresh</a></li>  
+    </ul>
 
 <div class = "plant_grid" id = "plant_grid">
 
@@ -88,15 +113,19 @@ setInterval(Loop10, 30000);
 
 //regelmäßig aktualisieren, hier drüber auf 10s gesetzt
 function Loop10() {
-  document.getElementById("plant_grid").innerHTML = ""
   get_sensors().then((sensors) => {
     console.log(sensors);
+    document.getElementById("plant_grid").innerHTML = ""
     for(var pot of sensors)
   {
   //pot ist hier die variable mit der er arbeitet
     CreateDashboard(pot);
   } 
   });
+}
+//Hilfsfunktion "Sleep" -> Wartezeit für Raspberry
+function Sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
   //Daten von API ziehen
   async function get_sensors() {
@@ -109,6 +138,10 @@ function Loop10() {
     let sensor_id = "/sensor/" + element;
     let sensor_data = await fetch(sensor_id).then(res => res.json());
     result_list.push(sensor_data);
+    //Wartezeit für raspberry
+    console.log("Warten...")
+    await Sleep(500);
+    console.log("weiteren Sensor gefunden")
     }  
   return result_list}
 
