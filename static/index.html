@@ -77,6 +77,8 @@
      #ErrorDelete {
       cursor: pointer;
       background-color: rgb(22, 230, 22);
+      padding: 10px 20px;
+      font-size: large;
      }
 /*CHATGPT*/
 .input_row {
@@ -121,11 +123,13 @@
 
 document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
 
-
+//Damit überall verfügbar außerhalb Funktion definiert
+let LoopIntervall;
 //Refresh, wenn über Button angefordert Seite leer machen
 function TopfRefresh() {
   document.getElementById("plant_grid").innerHTML = "Seite wird aktualisiert..."
-  setInterval(Loop10, 30000);
+  clearInterval(LoopIntervall)
+  LoopIntervall = setInterval(Loop10, 30000)
 }
 //regelmäßig aktualisieren, hier drüber auf 10s gesetzt
 function Loop10() {
@@ -230,7 +234,7 @@ function send_new_input(potId) {
 //Töpfe Ende
 //Fun Settings
 function FunSettings() {
-  clearInterval(Loop10)
+  clearInterval(LoopIntervall)
   document.getElementById("plant_grid").innerHTML = ""
   let plant = document.createElement("div")
   plant.className = "plant_card"
@@ -272,7 +276,7 @@ function Partymode() {
 //Error Codes
 function ErrorCodes() {
   //Loop stoppen
-  clearInterval(Loop10)
+  clearInterval(LoopIntervall)
   //Automatische Kartenerstellung
   document.getElementById("plant_grid").innerHTML = ""
   let plant = document.createElement("div")
@@ -287,7 +291,7 @@ function ErrorCodes() {
   plantzusatz.className = "plant_card"
   plantzusatz.innerHTML = `
   <h2 class="Pot_Nr">Errorcodes löschen</h2>
-  <button id=ErrorDelete type="submit" onclick="ErrorDeleteCommand()">Error Codes löschen</button>
+  <button id=ErrorDelete type="submit" onclick="ErrorDeleteCommand()">Löschen</button>
   `;
   document.getElementById("plant_grid").appendChild(plantzusatz)
 }
