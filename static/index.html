@@ -240,7 +240,7 @@ function FunSettings() {
   plant.className = "plant_card"
   plant.innerHTML = `
   <h2 class="Pot_Nr">Partymode</h2>
-  <button id=Party type="submit" onclick="Partymode()">Partymode eischalten</button>
+  <button id=Party type="submit" onclick="Partymode()">Partymode einschalten</button>
   `;
   document.getElementById("plant_grid").appendChild(plant)
 }
@@ -250,24 +250,24 @@ function Partymode() {
   let PartyButton = document.getElementById("Party")
   if (px === 0) {
     px = 1
+    fetch("/party/on", {method: "POST"})
     console.log("Partymodus eingeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
     PartyButton.disabled = false
     PartyButton.textContent="Partymode ausschalten"
-    console.log("weiter")
-    console.log("Hier command an endpoint EINSCHALTEN")
     }, 1000)
+    console.log("weiter")
   } else {
     px = 0
+    fetch("/party/off", {method: "POST"})
     console.log("Partymodus ausgeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
     PartyButton.disabled = false
     PartyButton.textContent="Partymode einschalten"
-    console.log("weiter")
-    console.log("Hier command an endpoint AUSSCHALTEN")
     }, 1000)
+    console.log("weiter")
   }
 
 }
