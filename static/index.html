@@ -118,11 +118,14 @@
 
 </div>    
 <script>
-//Töpfe Anfang
+//Töpfe Anfang (so final)
 //Funktionen:
 
 document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
-
+//Hilfsfunktion um Errors zu formatieren
+function padFourDigits(num) {
+  return num.toString().padStart(4, '0');
+}
 //Damit überall verfügbar außerhalb Funktion definiert
 let LoopIntervall;
 //Refresh, wenn über Button angefordert Seite leer machen
@@ -231,7 +234,7 @@ function send_new_input(potId) {
  })
 }
 
-//Töpfe Ende
+//Töpfe Ende (so final)
 //Fun Settings
 function FunSettings() {
   clearInterval(LoopIntervall)
@@ -244,7 +247,7 @@ function FunSettings() {
   `;
   document.getElementById("plant_grid").appendChild(plant)
 }
-
+//Partymodus so fertig, später muss nur der Pfad Raspberryseitig eingefügt werden
 let px = 0
 function Partymode() {
   let PartyButton = document.getElementById("Party")
@@ -256,7 +259,7 @@ function Partymode() {
     setTimeout(() => {
     PartyButton.disabled = false
     PartyButton.textContent="Partymode ausschalten"
-    }, 1000)
+    }, 25000)
     console.log("weiter")
   } else {
     px = 0
@@ -266,27 +269,54 @@ function Partymode() {
     setTimeout(() => {
     PartyButton.disabled = false
     PartyButton.textContent="Partymode einschalten"
-    }, 1000)
+    }, 25000)
     console.log("weiter")
   }
 
 }
 //Fun Setting
 
-//Error Codes
-function ErrorCodes() {
+//Error Codes (so final)
+// Dictionary für feste Codes (heißt in Java Object...)
+let error_translate_general = {
+  0:      "Raspberry hat neu gestartet",
+  1:      "Pumpe arbeitet nicht oder Wasserzufuhr eingeschränkt, starke Undichtigkeit.",
+  10:     "Wasservorrat (Regentonne) leer.",
+  11:     "Keine Gießwirkung erkennbar, keine Veränderung der Feuchtigkeit.",
+  404:    "Keine Internetverbindung.",
+  600:    "Frostwarnung, einmal kleiner 1°C gemessen.",
+  601:    "Frostwarnung Stufe 2, Messungen unter 1°C über einen Zeitraum von mehr als 1h.",
+  699:    "Temperatursensor liefert falsche/unrealistische Werte (-20°C>Messwert<50°C)" 
+};
+async function ErrorCodes() {
+  //Karte leer machen
+  document.getElementById("plant_grid").innerHTML = ""
   //Loop stoppen
   clearInterval(LoopIntervall)
   //Automatische Kartenerstellung
-  document.getElementById("plant_grid").innerHTML = ""
+  let error_path = "/errors"
+  let errors = await fetch(error_path).then(res => res.json());
+  errors.forEach(error => {
+  let Pot_Nr = error
+  let error_translation //Error Codes interpretieren, muss später auf hexadezimal umgebaut werden.
+    if (error > 200 && error < 300) {
+      error_translation = "Feuchtigkeiswert unrealistisch bei Sensor " + (error-200); 
+  } else if (error > 100 && error < 200) {
+      error_translation = "Sensor " + (error-100) + " nicht erreichbar."
+  } else if (error > 500 && error < 600) { //Definition noch unklar, später vielleicht spezifischer
+      error_translation = "CAN-Fehler Sensornetzwerk"
+  }
+  else error_translation = error_translate_general[error];
+ //Ab hier dann tatsächlich Karte erstellen, das zuvor für Werte
   let plant = document.createElement("div")
   plant.className = "plant_card"
   plant.innerHTML = `
-  <h2 class="Pot_Nr">Errorcode</h2>
-  <div class="Feuchte">Beschreibung Errorcode</div>
+  <h2 class="Pot_Nr">${padFourDigits(Pot_Nr)}</h2>
+  <div class="Feuchte">${error_translation}</div>
   `;
   document.getElementById("plant_grid").appendChild(plant)
-  //Zusätzliche Karte zum löschen
+  })
+  //Zusätzliche Karte zum Fehler löschen
   let plantzusatz = document.createElement("div")
   plantzusatz.className = "plant_card"
   plantzusatz.innerHTML = `
@@ -298,7 +328,7 @@ function ErrorCodes() {
 function ErrorDeleteCommand() {
   console.log("Hier würden die Errors dann gelöscht werden")
 }
-//Error Codes
+//Error Codes (so final)
 </script>
 
 </body>
