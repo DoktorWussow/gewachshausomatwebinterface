@@ -47,6 +47,12 @@ returns information on a single sensor, depending on the sensor either values or
   "humidity": null 
 }
 ```
+### `/errors`
+returns a random set off errors from the errors defined in errors.json
+the length of the array is defined by the range defined in errors.json
+```json
+  [1101, 6943]
+```
 
 ## POST
 
