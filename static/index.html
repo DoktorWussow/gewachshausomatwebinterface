@@ -74,6 +74,10 @@
      .AirHumidity {
       
      }
+     #ErrorDelete {
+      cursor: pointer;
+      background-color: rgb(22, 230, 22);
+     }
 /*CHATGPT*/
 .input_row {
   display: flex;
@@ -98,19 +102,31 @@
     <h1>
         Gewächshausomat
     </h1>
+  <!--Navbar-->
     <ul>
-      <li><a class="active" onclick="location.reload()" value="ReLoad">Refresh</a></li>  
+      <li>
+        <!--<a class="active" onclick="location.reload()" value="ReLoad">Refresh</a>-->
+        <a class="active" onclick="Loop10(); TopfRefresh()">Töpfe</a>
+        <a class="active" onclick="FunSettings()">Extras</a>
+        <a class="active" onclick="ErrorCodes()">Errors</a>
+      </li>  
     </ul>
 
 <div class = "plant_grid" id = "plant_grid">
 
 </div>    
 <script>
-  //Funktionen:
+//Töpfe Anfang
+//Funktionen:
 
-Loop10()
-setInterval(Loop10, 30000);
+document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
 
+
+//Refresh, wenn über Button angefordert Seite leer machen
+function TopfRefresh() {
+  document.getElementById("plant_grid").innerHTML = "Seite wird aktualisiert..."
+  setInterval(Loop10, 30000);
+}
 //regelmäßig aktualisieren, hier drüber auf 10s gesetzt
 function Loop10() {
   get_sensors().then((sensors) => {
@@ -127,26 +143,26 @@ function Loop10() {
 function Sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
-  //Daten von API ziehen
-  async function get_sensors() {
-    let result_list = []
-    let sensor_path = "/sensors";
-    let sensors = await fetch(sensor_path).then(res => res.json());
-    //for each zu schnell, mit for geht er alles einzeln durch
-    for(var element of sensors)
-    {
-    let sensor_id = "/sensor/" + element;
-    let sensor_data = await fetch(sensor_id).then(res => res.json());
-    result_list.push(sensor_data);
-    //Wartezeit für raspberry
-    console.log("Warten...")
-    await Sleep(500);
-    console.log("weiteren Sensor gefunden")
-    }  
-  return result_list}
+//Daten von API ziehen
+async function get_sensors() {
+  let result_list = []
+  let sensor_path = "/sensors";
+  let sensors = await fetch(sensor_path).then(res => res.json());
+  //for each zu schnell, mit for geht er alles einzeln durch
+  for(var element of sensors)
+  {
+  let sensor_id = "/sensor/" + element;
+  let sensor_data = await fetch(sensor_id).then(res => res.json());
+  result_list.push(sensor_data);
+  //Wartezeit für raspberry
+  console.log("Warten...")
+  await Sleep(500);
+  console.log("weiteren Sensor gefunden")
+  }  
+return result_list}
 
-  //Kästen erstellen
- function CreateDashboard(details_pot) {
+//Kästen erstellen
+function CreateDashboard(details_pot) {
   let plant = document.createElement("div")
   plant.className = "plant_card"
   
@@ -180,10 +196,10 @@ function Sleep(milliseconds) {
     <input type="number" min="1" max="120" step="1"value="${details_pot["watering_time"]}" id="${details_pot["id"]}_newinputwateringtime">
   </div>
 
-  <button type="submit" onclick="send_new_input('${details_pot["id"]}')">Senden</button>
+  <button type="submit" onclick="send_new_input('${details_pot["id"]}')">Input Senden</button>
 `;
   document.getElementById("plant_grid").appendChild(plant)
- } 
+} 
 
  //Funktion für Button "Senden" (CHATGPT)
 function send_new_input(potId) {
@@ -210,6 +226,75 @@ function send_new_input(potId) {
    body: JSON.stringify(data)
  })
 }
+
+//Töpfe Ende
+//Fun Settings
+function FunSettings() {
+  clearInterval(Loop10)
+  document.getElementById("plant_grid").innerHTML = ""
+  let plant = document.createElement("div")
+  plant.className = "plant_card"
+  plant.innerHTML = `
+  <h2 class="Pot_Nr">Partymode</h2>
+  <button id=Party type="submit" onclick="Partymode()">Partymode eischalten</button>
+  `;
+  document.getElementById("plant_grid").appendChild(plant)
+}
+
+let px = 0
+function Partymode() {
+  let PartyButton = document.getElementById("Party")
+  if (px === 0) {
+    px = 1
+    console.log("Partymodus eingeschaltet")
+    PartyButton.disabled = true
+    setTimeout(() => {
+    PartyButton.disabled = false
+    PartyButton.textContent="Partymode ausschalten"
+    console.log("weiter")
+    console.log("Hier command an endpoint EINSCHALTEN")
+    }, 1000)
+  } else {
+    px = 0
+    console.log("Partymodus ausgeschaltet")
+    PartyButton.disabled = true
+    setTimeout(() => {
+    PartyButton.disabled = false
+    PartyButton.textContent="Partymode einschalten"
+    console.log("weiter")
+    console.log("Hier command an endpoint AUSSCHALTEN")
+    }, 1000)
+  }
+
+}
+//Fun Setting
+
+//Error Codes
+function ErrorCodes() {
+  //Loop stoppen
+  clearInterval(Loop10)
+  //Automatische Kartenerstellung
+  document.getElementById("plant_grid").innerHTML = ""
+  let plant = document.createElement("div")
+  plant.className = "plant_card"
+  plant.innerHTML = `
+  <h2 class="Pot_Nr">Errorcode</h2>
+  <div class="Feuchte">Beschreibung Errorcode</div>
+  `;
+  document.getElementById("plant_grid").appendChild(plant)
+  //Zusätzliche Karte zum löschen
+  let plantzusatz = document.createElement("div")
+  plantzusatz.className = "plant_card"
+  plantzusatz.innerHTML = `
+  <h2 class="Pot_Nr">Errorcodes löschen</h2>
+  <button id=ErrorDelete type="submit" onclick="ErrorDeleteCommand()">Error Codes löschen</button>
+  `;
+  document.getElementById("plant_grid").appendChild(plantzusatz)
+}
+function ErrorDeleteCommand() {
+  console.log("Hier würden die Errors dann gelöscht werden")
+}
+//Error Codes
 </script>
 
 </body>
