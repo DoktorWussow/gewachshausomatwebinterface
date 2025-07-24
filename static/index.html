@@ -74,6 +74,12 @@
      .AirHumidity {
       
      }
+     .input_button {
+
+     }
+     .Ausschaltbar {
+      /* Diese Klasse brauchen wir um die betroffenen Elemente bei Aktualisierung auszuschalten. Sie hat nur diesen Zweck*/
+     }
      #ErrorDelete {
       cursor: pointer;
       background-color: rgb(22, 230, 22);
@@ -108,9 +114,9 @@
     <ul>
       <li>
         <!--<a class="active" onclick="location.reload()" value="ReLoad">Refresh</a>-->
-        <a class="active" onclick="Loop10(); TopfRefresh()">Töpfe</a>
-        <a class="active" onclick="FunSettings()">Extras</a>
-        <a class="active" onclick="ErrorCodes()">Errors</a>
+        <a class="active Ausschaltbar" onclick="Loop10(); TopfRefresh()">Töpfe</a>
+        <a class="active Ausschaltbar" onclick="FunSettings()">Extras</a>
+        <a class="active Ausschaltbar" onclick="ErrorCodes()">Fehlerspeicher</a>
       </li>  
     </ul>
 
@@ -118,7 +124,6 @@
 
 </div>    
 <script>
-//Töpfe Anfang (so final)
 //Funktionen:
 
 document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
@@ -126,16 +131,29 @@ document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
 function padFourDigits(num) {
   return num.toString().padStart(4, '0');
 }
-//Damit überall verfügbar außerhalb Funktion definiert
+//Damit überall verfügbar außerhalb von Funktionen definiert
 let LoopIntervall;
-//Refresh, wenn über Button angefordert Seite leer machen
+let OverallTemp = 0;
+let OverallHum = 0;
+let TempCount = 0;
+let HumCount = 0;
+
+//Töpfe Anfang (so final)
+//Wenn über Button "Töpfe" angefordert Seite leer machen zum neu schreiben, außerdem Loop starten
 function TopfRefresh() {
   document.getElementById("plant_grid").innerHTML = "Seite wird aktualisiert..."
   clearInterval(LoopIntervall)
   LoopIntervall = setInterval(Loop10, 30000)
 }
-//regelmäßig aktualisieren, hier drüber auf 10s gesetzt
+//regelmäßig aktualisieren, hier drüber auf 30s gesetzt, zusätzlich Eingaben deaktivieren
 function Loop10() {
+//Navbar und Eingabemöglichkeiten deaktivieren, damit Aktualisierung durchlaufen kann
+  let navElements = document.getElementsByClassName("Ausschaltbar");
+  for (let el of navElements) {
+    el.style.pointerEvents = "none";
+    el.style.opacity = "0.5";
+    el.disabled = true;
+}
   get_sensors().then((sensors) => {
     console.log(sensors);
     document.getElementById("plant_grid").innerHTML = ""
@@ -143,7 +161,8 @@ function Loop10() {
   {
   //pot ist hier die variable mit der er arbeitet
     CreateDashboard(pot);
-  } 
+  }
+  DashboardZusatz() 
   });
 }
 //Hilfsfunktion "Sleep" -> Wartezeit für Raspberry
@@ -176,36 +195,67 @@ function CreateDashboard(details_pot) {
   //$: aus der Liste was ziehen (überarbeitet mit CHATGPT)
   plant.innerHTML = `
   <h2 class="Pot_Nr">${details_pot["id"]}</h2>
-  <div class="Feuchte">Feuchtigkeit: <b> ${details_pot["moisture"]} </b> </div>
-  <div class="Threshold">Schwellwert: <b> ${details_pot["threshold"]} </b> </div>`
+  <div class="Feuchte">Feuchtigkeit: <b> ${details_pot["moisture"]} </b> </div>`
+  //<div class="Threshold">Schwellwert: <b> ${details_pot["threshold"]} </b> </div> //Wichtig: ` wieder umsetzen
 
   if (details_pot["temperature"] != null) {
-  plant.innerHTML+=`<div class="AirTemp">Temperatur: <b> ${details_pot["temperature"]} </b> </div>`
+    plant.innerHTML+=`<div class="AirTemp">Temperatur: <b> ${details_pot["temperature"]} </b> </div>`
+    OverallTemp = OverallTemp + details_pot["temperature"]
+    TempCount = TempCount + 1
   }
 
   if (details_pot["humidity"] != null) {
     plant.innerHTML+=`<div class="AirHumidity">Luftfeuchtigkeit: <b> ${details_pot["humidity"]} </b> </div>`
+    OverallHum = OverallHum + details_pot["humidity"]
+    HumCount = HumCount + 1
   }
 
   plant.innerHTML+=`
   <div class="input_row">
-    <label>Neuer Schwellenwert:</label>
-    <input type="number" min="1200" max="2000" step="10" value="${details_pot["threshold"]}" id="${details_pot["id"]}_newinputthreshold">
+    <label>Schwellwert:</label>
+    <input type="number" class="Ausschaltbar" min="1200" max="2000" step="10" value="${details_pot["threshold"]}" id="${details_pot["id"]}_newinputthreshold">
   </div>
 
   <div class="input_row">
     <label>Wartezeit (min):</label>
-    <input type="number" min="1" max="120" step="1" value="${details_pot["backoff_time"]}" id="${details_pot["id"]}_newinputbackofftime">
+    <input type="number" class="Ausschaltbar" min="1" max="120" step="1" value="${details_pot["backoff_time"]}" id="${details_pot["id"]}_newinputbackofftime">
   </div>
 
   <div class="input_row">
     <label>Wässerungszeit (s):</label>
-    <input type="number" min="1" max="120" step="1"value="${details_pot["watering_time"]}" id="${details_pot["id"]}_newinputwateringtime">
+    <input type="number" class="Ausschaltbar" min="1" max="120" step="1"value="${details_pot["watering_time"]}" id="${details_pot["id"]}_newinputwateringtime">
   </div>
 
+  <div class="input_button Ausschaltbar">
   <button type="submit" onclick="send_new_input('${details_pot["id"]}')">Input Senden</button>
+  </div>
 `;
   document.getElementById("plant_grid").appendChild(plant)
+}
+function DashboardZusatz() {
+  console.log(OverallHum, HumCount, OverallTemp, TempCount)
+  let plant = document.createElement("div")
+  plant.className = "plant_card"
+  //Zusatzkarte für Durchschnittstemperatur und -Feuchtigkeit
+  let plantzusatz = document.createElement("div")
+  plantzusatz.className = "plant_card"
+  plantzusatz.innerHTML = `
+  <h2 class="Pot_Nr">Ø-werte</h2>
+  <div class="Feuchte">Temperatur: <b> ${OverallTemp/TempCount} </b> </div>
+  <div class="Threshold">Luftfeuchte: <b> ${OverallHum/HumCount} </b> </div>
+  `;
+  document.getElementById("plant_grid").appendChild(plantzusatz)
+  OverallHum = 0
+  OverallTemp = 0
+  TempCount = 0
+  HumCount = 0
+  //Navbar und Eingabemöglichkeiten wieder aktivieren
+  let navElements = document.getElementsByClassName("Ausschaltbar");
+  for (let el of navElements) {
+    el.style.pointerEvents = "";
+    el.style.opacity = "";
+    el.disabled = false;
+  };
 } 
 
  //Funktion für Button "Senden" (CHATGPT)
@@ -232,18 +282,19 @@ function send_new_input(potId) {
    },
    body: JSON.stringify(data)
  })
+ alert("Daten gesendet")
 }
-
 //Töpfe Ende (so final)
-//Fun Settings
+
+//Fun Settings (so final)
 function FunSettings() {
   clearInterval(LoopIntervall)
   document.getElementById("plant_grid").innerHTML = ""
   let plant = document.createElement("div")
   plant.className = "plant_card"
   plant.innerHTML = `
-  <h2 class="Pot_Nr">Partymode</h2>
-  <button id=Party type="submit" onclick="Partymode()">Partymode einschalten</button>
+  <h2 class="Pot_Nr">Partymodus</h2>
+  <button id=Party type="submit" onclick="Partymode()">Partymodus einschalten</button>
   `;
   document.getElementById("plant_grid").appendChild(plant)
 }
@@ -258,7 +309,7 @@ function Partymode() {
     PartyButton.disabled = true
     setTimeout(() => {
     PartyButton.disabled = false
-    PartyButton.textContent="Partymode ausschalten"
+    PartyButton.textContent="Partymodus ausschalten"
     }, 25000)
     console.log("weiter")
   } else {
@@ -268,16 +319,16 @@ function Partymode() {
     PartyButton.disabled = true
     setTimeout(() => {
     PartyButton.disabled = false
-    PartyButton.textContent="Partymode einschalten"
+    PartyButton.textContent="Partymodus einschalten"
     }, 25000)
     console.log("weiter")
   }
 
 }
-//Fun Setting
+//Fun Settings (so final)
 
 //Error Codes (so final)
-// Dictionary für feste Codes (heißt in Java Object...)
+//Dictionary für feste Codes (heißt in Java Object...)
 let error_translate_general = {
   0:      "Raspberry hat neu gestartet",
   1:      "Pumpe arbeitet nicht oder Wasserzufuhr eingeschränkt, starke Undichtigkeit.",
@@ -298,7 +349,8 @@ async function ErrorCodes() {
   let errors = await fetch(error_path).then(res => res.json());
   errors.forEach(error => {
   let Pot_Nr = error
-  let error_translation //Error Codes interpretieren, muss später auf hexadezimal umgebaut werden.
+  //Error Codes interpretieren, muss später auf hexadezimal umgebaut werden.
+  let error_translation
     if (error > 200 && error < 300) {
       error_translation = "Feuchtigkeiswert unrealistisch bei Sensor " + (error-200); 
   } else if (error > 100 && error < 200) {
@@ -324,7 +376,7 @@ async function ErrorCodes() {
   <button id=ErrorDelete type="submit" onclick="ErrorDeleteCommand()">Löschen</button>
   `;
   document.getElementById("plant_grid").appendChild(plantzusatz)
-}
+  }
 function ErrorDeleteCommand() {
   console.log("Hier würden die Errors dann gelöscht werden")
 }
