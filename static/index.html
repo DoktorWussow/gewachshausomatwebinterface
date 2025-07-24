@@ -126,7 +126,6 @@
 <script>
 //Funktionen:
 
-document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
 //Hilfsfunktion um Errors zu formatieren
 function padFourDigits(num) {
   return num.toString().padStart(4, '0');
@@ -138,6 +137,11 @@ let OverallHum = 0;
 let TempCount = 0;
 let HumCount = 0;
 
+//Autostart:
+TopfRefresh()
+Loop10()
+//Kein Autostart:
+//document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
 //Töpfe Anfang (so final)
 //Wenn über Button "Töpfe" angefordert Seite leer machen zum neu schreiben, außerdem Loop starten
 function TopfRefresh() {
