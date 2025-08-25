@@ -131,11 +131,13 @@ function padFourDigits(num) {
   return num.toString().padStart(4, '0');
 }
 //Damit überall verfügbar außerhalb von Funktionen definiert
-let LoopIntervall;
+let LoopIntervall = 0;
 let OverallTemp = 0;
 let OverallHum = 0;
 let TempCount = 0;
 let HumCount = 0;
+let timeleft = 0;
+let Refreshintervall = 30; //Hier Refreshrate einstellen
 
 //Autostart:
 TopfRefresh()
@@ -147,10 +149,12 @@ Loop10()
 function TopfRefresh() {
   document.getElementById("plant_grid").innerHTML = "Seite wird aktualisiert..."
   clearInterval(LoopIntervall)
-  LoopIntervall = setInterval(Loop10, 30000)
+  LoopIntervall = setInterval(Loop10, Refreshintervall * 1000)
+  
 }
 //regelmäßig aktualisieren, hier drüber auf 30s gesetzt, zusätzlich Eingaben deaktivieren
 function Loop10() {
+timeleft = Refreshintervall
 //Navbar und Eingabemöglichkeiten deaktivieren, damit Aktualisierung durchlaufen kann
   let navElements = document.getElementsByClassName("Ausschaltbar");
   for (let el of navElements) {
@@ -163,12 +167,17 @@ function Loop10() {
     document.getElementById("plant_grid").innerHTML = ""
     for(var pot of sensors)
   {
+
+  
   //pot ist hier die variable mit der er arbeitet
     CreateDashboard(pot);
   }
+  
+  countdown(LoopIntervall)
   DashboardZusatz() 
   });
 }
+
 //Hilfsfunktion "Sleep" -> Wartezeit für Raspberry
 function Sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -195,6 +204,7 @@ return result_list}
 function CreateDashboard(details_pot) {
   let plant = document.createElement("div")
   plant.className = "plant_card"
+  
   
   //$: aus der Liste was ziehen (überarbeitet mit CHATGPT)
   plant.innerHTML = `
@@ -253,6 +263,7 @@ function DashboardZusatz() {
   OverallTemp = 0
   TempCount = 0
   HumCount = 0
+  
   //Navbar und Eingabemöglichkeiten wieder aktivieren
   let navElements = document.getElementsByClassName("Ausschaltbar");
   for (let el of navElements) {
@@ -261,6 +272,28 @@ function DashboardZusatz() {
     el.disabled = false;
   };
 } 
+//Zusatzkarte für Countdown
+  let plantzusatz2 = document.createElement("div")
+  plantzusatz2.className = "plant_card"
+
+  var timerId = setInterval(countdown, 1000)
+
+    function countdown() {
+       
+      if (timeleft == -1) {
+        clearTimeout(timerId)
+        plantzusatz2.innerHTML = `Aktualisierung erfolgt gleich...`
+        
+      } else {
+        plantzusatz2.innerHTML = `
+        <h2 class="Pot_Nr">Countdown Refresh</h2>
+        <div class="Countdown"> ${timeleft} Sekunden bis Neuabrufen Daten</div>
+        `;
+        timeleft--;
+      }
+    document.getElementById("plant_grid").prepend(plantzusatz2)
+    }
+  
 
  //Funktion für Button "Senden" (CHATGPT)
 function send_new_input(potId) {
@@ -385,6 +418,7 @@ function ErrorDeleteCommand() {
   console.log("Hier würden die Errors dann gelöscht werden")
 }
 //Error Codes (so final)
+
 </script>
 
 </body>
