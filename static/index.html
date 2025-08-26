@@ -141,7 +141,7 @@ let TempCount = 0;
 let HumCount = 0;
 let timeleft = 0;
 let countdowntimer = 0;
-let Refreshintervall = 20; //Hier Refreshrate einstellen
+let Refreshintervall = 65; //Hier Refreshrate einstellen
 
 //Autostart:
 TopfRefresh()
@@ -193,12 +193,12 @@ function Sleep(milliseconds) {
 //Daten von API ziehen
 async function get_sensors() {
   let result_list = []
-  let sensor_path = "http://192.168.2.85:8000/sensors";
+  let sensor_path = "/sensors";
   let sensors = await fetch(sensor_path).then(res => res.json());
   //for each zu schnell, mit for geht er alles einzeln durch
   for(var element of sensors)
   {
-  let sensor_id = "http://192.168.2.85:8000/sensor/" + element;
+  let sensor_id = "/sensor/" + element;
   let sensor_data = await fetch(sensor_id).then(res => res.json());
   result_list.push(sensor_data);
   //Wartezeit für raspberry
@@ -357,7 +357,7 @@ function Partymode() {
   let PartyButton = document.getElementById("Party")
   if (px === 0) {
     px = 1
-    fetch("http://192.168.2.85:8000/party/on", {method: "POST"})
+    fetch("/party/on", {method: "POST"})
     console.log("Partymodus eingeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
@@ -367,7 +367,7 @@ function Partymode() {
     console.log("weiter")
   } else {
     px = 0
-    fetch("http://192.168.2.85:8000/party/off", {method: "POST"})
+    fetch("/party/off", {method: "POST"})
     console.log("Partymodus ausgeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
