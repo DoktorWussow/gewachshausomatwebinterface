@@ -41,7 +41,7 @@
         font-size: 35pt;
     }
     h2 {
-      
+
     }
     .Pot_Nr {
       text-align: center;
@@ -140,23 +140,27 @@ let OverallHum = 0;
 let TempCount = 0;
 let HumCount = 0;
 let timeleft = 0;
-let Refreshintervall = 300; //Hier Refreshrate einstellen
+let countdowntimer = 0;
+let Refreshintervall = 20; //Hier Refreshrate einstellen
 
 //Autostart:
 TopfRefresh()
 Loop10()
 //Kein Autostart:
 //document.getElementById("plant_grid").innerHTML = "Bitte Funktion wählen..."
+
+
 //Töpfe Anfang (so final)
 //Wenn über Button "Töpfe" angefordert Seite leer machen zum neu schreiben, außerdem Loop starten
 function TopfRefresh() {
   document.getElementById("plant_grid").innerHTML = "Seite wird aktualisiert..."
   clearInterval(LoopIntervall)
+  clearInterval(countdowntimer)
   LoopIntervall = setInterval(Loop10, Refreshintervall * 1000)
-  
+  countdowntimer = setInterval(countdown, 1000)
 }
-//regelmäßig aktualisieren, hier drüber auf 30s gesetzt, zusätzlich Eingaben deaktivieren
-function Loop10() {
+//regelmäßig aktualisieren, zusätzlich Eingaben deaktivieren
+function Loop10() {  
 timeleft = Refreshintervall
 //Navbar und Eingabemöglichkeiten deaktivieren, damit Aktualisierung durchlaufen kann
   let navElements = document.getElementsByClassName("Ausschaltbar");
@@ -176,7 +180,8 @@ timeleft = Refreshintervall
     CreateDashboard(pot);
   }
   
-  countdown(LoopIntervall)
+  
+  countdown(Refreshintervall)
   DashboardZusatz() 
   });
 }
@@ -188,17 +193,17 @@ function Sleep(milliseconds) {
 //Daten von API ziehen
 async function get_sensors() {
   let result_list = []
-  let sensor_path = "/sensors";
+  let sensor_path = "http://192.168.2.85:8000/sensors";
   let sensors = await fetch(sensor_path).then(res => res.json());
   //for each zu schnell, mit for geht er alles einzeln durch
   for(var element of sensors)
   {
-  let sensor_id = "/sensor/" + element;
+  let sensor_id = "http://192.168.2.85:8000/sensor/" + element;
   let sensor_data = await fetch(sensor_id).then(res => res.json());
   result_list.push(sensor_data);
   //Wartezeit für raspberry
   console.log("Warten...")
-  await Sleep(5000);
+  await Sleep(1000);
   console.log("Nächste Anfrage...")
   }  
 return result_list}
@@ -209,7 +214,7 @@ function CreateDashboard(details_pot) {
   plant.className = "plant_card"
   
   
-  //$: aus der Liste was ziehen (überarbeitet mit CHATGPT)
+  //${}: innerhalb "innerhtml" Code ausführen bzw ihm sagen er soll mehr machen als Buchstaben schreiben (überarbeitet mit CHATGPT)
   plant.innerHTML = `
   <h2 class="Pot_Nr">${details_pot["id"]}</h2>
   <div class="Feuchte">Feuchtigkeit: <b> ${details_pot["moisture"]} </b> </div>`
@@ -258,8 +263,8 @@ function DashboardZusatz() {
   plantzusatz.className = "plant_card"
   plantzusatz.innerHTML = `
   <h2 class="Pot_Nr">Ø-werte</h2>
-  <div class="Feuchte">Temperatur: <b> ${OverallTemp/TempCount} </b> </div>
-  <div class="Threshold">Luftfeuchte: <b> ${OverallHum/HumCount} </b> </div>
+  <div class="Feuchte">Temperatur: <b> ${Math.round(OverallTemp/TempCount)} </b> </div>
+  <div class="Threshold">Luftfeuchte: <b> ${Math.round(OverallHum/HumCount)} </b> </div>
   `;
   document.getElementById("plant_grid").appendChild(plantzusatz)
   OverallHum = 0
@@ -278,14 +283,12 @@ function DashboardZusatz() {
 //Zusatzkarte für Countdown
   let plantzusatz2 = document.createElement("div")
   plantzusatz2.className = "plant_card"
-
-  var timerId = setInterval(countdown, 1000)
-
+  
     function countdown() {
     let minuten = Math.floor(timeleft / 60)
     let sekunden = timeleft - (minuten * 60)   
       if (timeleft == -1) {
-        clearTimeout(timerId)
+        clearInterval(countdowntimer)
         plantzusatz2.innerHTML = `Aktualisierung erfolgt gleich...`
         
       } else {
@@ -354,7 +357,7 @@ function Partymode() {
   let PartyButton = document.getElementById("Party")
   if (px === 0) {
     px = 1
-    fetch("/party/on", {method: "POST"})
+    fetch("http://192.168.2.85:8000/party/on", {method: "POST"})
     console.log("Partymodus eingeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
@@ -364,7 +367,7 @@ function Partymode() {
     console.log("weiter")
   } else {
     px = 0
-    fetch("/party/off", {method: "POST"})
+    fetch("http://192.168.2.85:8000/party/off", {method: "POST"})
     console.log("Partymodus ausgeschaltet")
     PartyButton.disabled = true
     setTimeout(() => {
