@@ -179,8 +179,6 @@ timeleft = Refreshintervall
   //pot ist hier die variable mit der er arbeitet
     CreateDashboard(pot);
   }
-  
-  
   countdown(Refreshintervall)
   DashboardZusatz() 
   });
@@ -342,6 +340,7 @@ function send_new_input(potId) {
 //Fun Settings (so final)
 function FunSettings() {
   clearInterval(LoopIntervall)
+  clearInterval(countdowntimer)
   document.getElementById("plant_grid").innerHTML = ""
   let plant = document.createElement("div")
   plant.className = "plant_card"
@@ -397,6 +396,7 @@ async function ErrorCodes() {
   document.getElementById("plant_grid").innerHTML = ""
   //Loop stoppen
   clearInterval(LoopIntervall)
+  clearInterval(countdowntimer)
   //Automatische Kartenerstellung
   let error_path = "/errors"
   let errors = await fetch(error_path).then(res => res.json());
