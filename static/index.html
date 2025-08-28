@@ -8,30 +8,30 @@
     /*Maximale anzustrebende Größe: 1MB */
     /*Navbar*/
     ul {
-      list-style: none;
+      list-style-type: none;
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: black;
+      background-color: rgb(84, 144, 69);
     }
     li {
       float: left;
     }
     li a {
      display: block;
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;  
     }
     li a:hover {
-      background-color: #111;
+      background-color: rgb(67, 114, 56);
     }
     /*Ende Navbar*/
     body {
       font-family: Arial, sans-serif;
-      color: green;
-      background: #1d1c1c;
+      color: rgb(6, 35, 6);
+      background: #a8cdaa;
       margin: 0;
       padding: 2rem;
     }
@@ -46,39 +46,71 @@
     .Pot_Nr {
       text-align: center;
       font-family: 'Times New Roman', Times, serif;
-      text-decoration: underline;
-      color: green;
+      text-decoration: none;
+      color: rgb(0, 0, 0);
       font-size: xx-large;
     }
     .plant_card {
-      background: rgb(0, 0, 0);
-      color: green;
+      background: rgb(84, 144, 69);
+      color: rgb(0, 0, 0);
       border-radius: 10px;
       padding: 1rem;
-      box-shadow: 0 2px 6px green;
+      box-shadow: 0 2px 6px rgb(14, 42, 14);
 
     }
      .plant_grid {
       display: grid;
-      color: green;
+      color: rgb(0, 0, 0);
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1.5rem;
       margin-top: 2rem;
      }
      .Feuchte {
-      
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
      }
+
+     .Feuchte b {
+      text-align: right;
+      margin-right: 1rem;
+     }
+
      .Threshold {
       
      }
      .AirTemp {
-      
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
      }
-     .AirHumidity {
-      
-     }
-     .input_button {
 
+     .AirTemp b {
+      text-align: right;
+      margin-right: 1rem;
+     }
+
+     .AirHumidity {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+     }
+
+     .AirHumidity b {
+      text-align: right;
+      margin-right: 1rem;
+     }
+
+     .input_button{
+      text-align: right;
+     }
+
+     .input_button button{
+      background-color:#a8cdaa;
+      color: rgb(0, 0, 0);
+      border-color: rgb(0, 0, 0);
+      border-radius: 5px;
+      padding: 5px;
      }
      .Ausschaltbar {
       /* Diese Klasse brauchen wir um die betroffenen Elemente bei Aktualisierung auszuschalten. Sie hat nur diesen Zweck. Hier keine Gestaltung notwendig.*/
@@ -89,7 +121,7 @@
       padding: 10px 20px;
       font-size: large;
      }
-/*CHATGPT*/
+/*CHATGPT (und Uta)*/
 .input_row {
   display: flex;
   justify-content: space-between;
@@ -99,12 +131,15 @@
 
 .input_row label {
   flex: 1;
-  color: green;
+  color: rgb(0, 0, 0);
 }
 
 .input_row input {
+  background-color:#a8cdaa;
+  color: rgb(0, 0, 0);
+  border-color: rgb(0, 0, 0);
+  border-radius: 5px;
   width: 3rem;
-  text-align: right;
 }
 /*CHATGPT*/
   </style>
@@ -115,12 +150,11 @@
     </h1>
   <!--Navbar-->
     <ul>
-      <li>
         <!--<a class="active" onclick="location.reload()" value="ReLoad">Refresh</a>-->
-        <a class="active Ausschaltbar" onclick="Loop10(); TopfRefresh()">Töpfe</a>
-        <a class="active Ausschaltbar" onclick="FunSettings()">Extras</a>
-        <a class="active Ausschaltbar" onclick="ErrorCodes()">Fehlerspeicher</a>
-      </li>  
+        <li><a class="active Ausschaltbar" onclick="Loop10(); TopfRefresh()">Töpfe</a></li>
+        <li><a class="active Ausschaltbar" onclick="FunSettings()">Extras</a></li>
+        <li><a class="active Ausschaltbar" onclick="ErrorCodes()">Fehlerspeicher</a></li>
+        <li><a class="active Ausschaltbar" onclick="">Light/Darkmode</a></li>
     </ul>
 
 <div class = "plant_grid" id = "plant_grid">
@@ -247,7 +281,7 @@ function CreateDashboard(details_pot) {
   </div>
 
   <div class="input_button Ausschaltbar">
-  <button type="submit" onclick="send_new_input('${details_pot["id"]}')">Input Senden</button>
+  <button type="submit" onclick="send_new_input('${details_pot["id"]}')">Senden</button>
   </div>
 `;
   document.getElementById("plant_grid").appendChild(plant)
