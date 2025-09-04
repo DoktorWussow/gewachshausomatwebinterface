@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: rgb(84, 144, 69);
+      background-color: rgb(91, 149, 77);
     }
     li {
       float: left;
@@ -25,19 +25,29 @@
     text-decoration: none;  
     }
     li a:hover {
-      background-color: rgb(67, 114, 56);
+      background-color: rgb(62, 108, 50);
     }
     /*Ende Navbar*/
-    body {
+
+    .lightmode {
       font-family: Arial, sans-serif;
       color: rgb(6, 35, 6);
       background: #a8cdaa;
       margin: 0;
       padding: 2rem;
     }
+
+    .darkmode{
+      font-family: Arial, sans-serif;
+      color: #a8cdaa;
+      background: rgb(6, 35, 6);
+      margin: 0;
+      padding: 2rem;
+    }
+
     h1 {
         text-align: center;
-        font-family: 'Times New Roman', Times, serif;
+        font-family: Arial, sans-serif;
         font-size: 35pt;
     }
     h2 {
@@ -45,14 +55,14 @@
     }
     .Pot_Nr {
       text-align: center;
-      font-family: 'Times New Roman', Times, serif;
+      font-family: Arial, Helvetica, sans-serif;
       text-decoration: none;
-      color: rgb(0, 0, 0);
+      color: rgb(6, 35, 6);
       font-size: xx-large;
     }
     .plant_card {
-      background: rgb(84, 144, 69);
-      color: rgb(0, 0, 0);
+      background: rgb(91, 149, 77);
+      color: rgb(6, 35, 6);
       border-radius: 10px;
       padding: 1rem;
       box-shadow: 0 2px 6px rgb(14, 42, 14);
@@ -60,7 +70,7 @@
     }
      .plant_grid {
       display: grid;
-      color: rgb(0, 0, 0);
+      color: rgb(6, 35, 6);
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1.5rem;
       margin-top: 2rem;
@@ -74,11 +84,20 @@
      .Feuchte b {
       text-align: right;
       margin-right: 1rem;
-     }
-
-     .Threshold {
       
      }
+     
+     .Threshold {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+     }
+
+     .Threshold b {
+      text-align: right;
+      margin-right: 1rem;
+     }
+
      .AirTemp {
       display: flex;
       justify-content: space-between;
@@ -107,8 +126,8 @@
 
      .input_button button{
       background-color:#a8cdaa;
-      color: rgb(0, 0, 0);
-      border-color: rgb(0, 0, 0);
+      color: rgb(6, 35, 6);
+      border-color: rgb(91, 149, 77);
       border-radius: 5px;
       padding: 5px;
      }
@@ -131,20 +150,20 @@
 
 .input_row label {
   flex: 1;
-  color: rgb(0, 0, 0);
+  color: rgb(6, 35, 6);
 }
 
 .input_row input {
   background-color:#a8cdaa;
-  color: rgb(0, 0, 0);
-  border-color: rgb(0, 0, 0);
+  color: rgb(6, 35, 6);
+  border-color: rgb(91, 149, 77);
   border-radius: 5px;
   width: 3rem;
 }
 /*CHATGPT*/
   </style>
 </head>
-<body>
+<body class="lightmode">
     <h1>
         Gewächshausomat
     </h1>
@@ -154,7 +173,7 @@
         <li><a class="active Ausschaltbar" onclick="Loop10(); TopfRefresh()">Töpfe</a></li>
         <li><a class="active Ausschaltbar" onclick="FunSettings()">Extras</a></li>
         <li><a class="active Ausschaltbar" onclick="ErrorCodes()">Fehlerspeicher</a></li>
-        <li><a class="active Ausschaltbar" onclick="">Light/Darkmode</a></li>
+        <li><a class="active Ausschaltbar" onclick="toggleDarkMode()">Light/Darkmode</a></li>
     </ul>
 
 <div class = "plant_grid" id = "plant_grid">
@@ -245,12 +264,20 @@ function CreateDashboard(details_pot) {
   let plant = document.createElement("div")
   plant.className = "plant_card"
   
-  
+  let moistureColor = "";
+  if (details_pot["moisture"] > details_pot["threshold"]) {
+    moistureColor= "style='color:red; font-weight:bold;'";
+  }else {
+    moistureColor = "style='color:black; font-weight:bold;'"; 
+  }
+
   //${}: innerhalb "innerhtml" Code ausführen bzw ihm sagen er soll mehr machen als Buchstaben schreiben (überarbeitet mit CHATGPT)
   plant.innerHTML = `
   <h2 class="Pot_Nr">${details_pot["id"]}</h2>
-  <div class="Feuchte">Feuchtigkeit: <b> ${details_pot["moisture"]} </b> </div>`
+  <div class="Feuchte">Feuchtigkeit: <b ${moistureColor}> ${details_pot["moisture"]} </b>  
+  </div>`
   //<div class="Threshold">Schwellwert: <b> ${details_pot["threshold"]} </b> </div> //Wichtig: ` wieder umsetzen
+ 
 
   if (details_pot["temperature"] != null) {
     plant.innerHTML+=`<div class="AirTemp">Temperatur: <b> ${details_pot["temperature"]} </b> </div>`
@@ -469,6 +496,9 @@ function ErrorDeleteCommand() {
 }
 //Error Codes (so final)
 
+function toggleDarkMode(){
+  document.body.classList.toggle("darkmode");
+}
 </script>
 
 </body>
